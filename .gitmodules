@@ -1,0 +1,3 @@
+[submodule "aws-apigw-acm"]
+	path = aws-apigw-acm
+	url = git@github.com:jolexa/aws-apigw-acm.git

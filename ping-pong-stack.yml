@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Ping Function and Pong Endpoint
+
+Parameters:
+  DomainName:
+    Type: String
+  PrimaryUrl:
+    Type: String
+  Bucket:
+    Type: String
+  md5:
+    Type: String
+
+Resources:
+  PongerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ponger.handler
+      Runtime: python2.7
+      Timeout: 1
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Events:
+        GetApi:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+
+  PongerPathMapping:
+    Type: "AWS::ApiGateway::BasePathMapping"
+    Properties:
+      BasePath: ting # careful /ping is a reserved endpoint
+      DomainName: !Ref DomainName
+      RestApiId: !Ref ServerlessRestApi
+      Stage: !Ref ServerlessRestApiProdStage # "Prod"
+
+  PingerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: pinger.handler
+      Runtime: python2.7
+      Timeout: 1
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          PrimaryUrl: !Ref PrimaryUrl
+      Events:
+        Cron:
+          Type: Schedule
+          Properties:
+            Schedule: rate(2 minutes)

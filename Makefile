@@ -7,7 +7,7 @@ PRIMARY_URL="apigw-multiregion.jolexa.us"
 STANDBY_URL="apigw-multiregion-standby.jolexa.us"
 ZONE="jolexa.us."
 
-all: existing-project
+all: existing-project ping-pong-stack
 
 existing-project:
 	cd aws-apigw-acm/ && \
@@ -23,3 +23,31 @@ existing-project:
 			URL=$(STANDBY_URL) \
 			ZONE=$(ZONE) \
 			BUCKET=$(STANDBY_BUCKET)
+
+ping-pong-stack:
+	cd lambda && zip -r9 deployment.zip *.py && \
+		aws s3 cp ./deployment.zip \
+		s3://$(PRIMARY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
+		aws s3 cp ./deployment.zip \
+		s3://$(STANDBY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
+		rm -f deployment.zip
+	aws cloudformation deploy \
+		--template-file ping-pong-stack.yml \
+		--stack-name $(STACKNAME_BASE)-ping-pong-infra-primary \
+		--region $(PRIMARY_REGION) \
+		--parameter-overrides \
+		"Bucket=$(PRIMARY_BUCKET)" \
+		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
+		"DomainName=$(PRIMARY_URL)" \
+		"PrimaryUrl=$(PRIMARY_URL)" \
+		--capabilities CAPABILITY_IAM && \
+	aws cloudformation deploy \
+		--template-file ping-pong-stack.yml \
+		--stack-name $(STACKNAME_BASE)-ping-pong-infra-standby \
+		--region $(STANDBY_REGION) \
+		--parameter-overrides \
+		"Bucket=$(STANDBY_BUCKET)" \
+		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
+		"DomainName=$(STANDBY_URL)" \
+		"PrimaryUrl=$(PRIMARY_URL)" \
+		--capabilities CAPABILITY_IAM

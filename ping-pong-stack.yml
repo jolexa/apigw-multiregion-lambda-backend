@@ -12,6 +12,13 @@ Parameters:
   md5:
     Type: String
 
+Mappings:
+  RegionMap:
+    us-east-2:
+      'cron': 'cron(0/2 * * * ? *)'
+    us-west-2:
+      'cron': 'cron(1/2 * * * ? *)'
+
 Resources:
   PongerFunction:
     Type: AWS::Serverless::Function
@@ -71,4 +78,4 @@ Resources:
         Cron:
           Type: Schedule
           Properties:
-            Schedule: rate(2 minutes)
+              Schedule: !FindInMap [RegionMap, !Ref 'AWS::Region', cron]

@@ -29,6 +29,24 @@ Resources:
             Path: /
             Method: GET
 
+  PongerFunctionAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      ActionsEnabled: true
+      AlarmDescription: Checks for number of pong invokes
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref PongerFunction
+      EvaluationPeriods: 1
+      MetricName: Invocations
+      Namespace: AWS/Lambda
+      Period: 120
+      Statistic: Sum
+      Threshold: 2
+      #TreatMissingData: breaching
+      Unit: Count
+
   PongerPathMapping:
     Type: "AWS::ApiGateway::BasePathMapping"
     Properties:

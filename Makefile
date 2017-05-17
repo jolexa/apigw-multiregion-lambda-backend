@@ -40,7 +40,7 @@ ping-pong-stack:
 		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
 		"DomainName=$(PRIMARY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
-		--capabilities CAPABILITY_IAM && \
+		--capabilities CAPABILITY_IAM || exit 0
 	aws cloudformation deploy \
 		--template-file ping-pong-stack.yml \
 		--stack-name $(STACKNAME_BASE)-ping-pong-infra-standby \
@@ -50,4 +50,18 @@ ping-pong-stack:
 		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
 		"DomainName=$(STANDBY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
-		--capabilities CAPABILITY_IAM
+		--capabilities CAPABILITY_IAM || exit 0
+	aws cloudformation deploy \
+		--template-file ping-pong-stack-sns-alarms.yml \
+		--stack-name $(STACKNAME_BASE)-ping-pong-infra-primary-sns-alarms \
+		--region $(PRIMARY_REGION) \
+		--parameter-overrides \
+		"OtherRegion=$(STANDBY_REGION)" \
+		--capabilities CAPABILITY_IAM || exit 0
+	aws cloudformation deploy \
+		--template-file ping-pong-stack-sns-alarms.yml \
+		--stack-name $(STACKNAME_BASE)-ping-pong-infra-standby-sns-alarms \
+		--region $(STANDBY_REGION) \
+		--parameter-overrides \
+		"OtherRegion=$(PRIMARY_REGION)" \
+		--capabilities CAPABILITY_IAM || exit 0

@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Cross Region SNS-Lambda Subscription
+
+Parameters:
+  OtherRegion:
+    Type: String
+
+Resources:
+  # The AWS Console will not show this trigger, but it works
+  SNSSubScription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !Sub arn:aws:lambda:${OtherRegion}:${AWS::AccountId}:function:apigw-multiregion-lambda-backend-swap
+      Protocol: lambda
+      TopicArn: !ImportValue apigw-multiregion-lambda-backend:AlarmSNSArn
+
+  # Just need to allow any SNS to invoke it
+  LambdaInvokePermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !ImportValue apigw-multiregion-lambda-backend:SwapperFunctionArn
+      Action: "lambda:InvokeFunction"
+      Principal: "sns.amazonaws.com"

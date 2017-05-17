@@ -12,6 +12,16 @@ Parameters:
   md5:
     Type: String
 
+Outputs:
+  AlarmSNSArn:
+    Value: !Ref AlarmSNS
+    Export:
+      Name: apigw-multiregion-lambda-backend:AlarmSNSArn
+  SwapperFunctionArn:
+    Value: !GetAtt SwapperFunction.Arn
+    Export:
+      Name: apigw-multiregion-lambda-backend:SwapperFunctionArn
+
 Mappings:
   RegionMap:
     us-east-2:
@@ -24,7 +34,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: ponger.handler
-      Runtime: python2.7
+      Runtime: python3.6
       Timeout: 1
       CodeUri:
         Bucket: !Ref Bucket
@@ -36,11 +46,27 @@ Resources:
             Path: /
             Method: GET
 
+  SwapperFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # I don't like hardcoding names but it is required for cross-region references
+      FunctionName: apigw-multiregion-lambda-backend-swap
+      Handler: swap.handler
+      Runtime: python3.6
+      Timeout: 1
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+
+  AlarmSNS:
+    Type: AWS::SNS::Topic
+
   PongerFunctionAlarm:
     Type: "AWS::CloudWatch::Alarm"
     Properties:
       ActionsEnabled: true
       AlarmDescription: Checks for number of pong invokes
+      AlarmActions: [ !Ref AlarmSNS ]
       ComparisonOperator: LessThanThreshold
       Dimensions:
         - Name: FunctionName
@@ -66,7 +92,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: pinger.handler
-      Runtime: python2.7
+      Runtime: python3.6
       Timeout: 1
       CodeUri:
         Bucket: !Ref Bucket

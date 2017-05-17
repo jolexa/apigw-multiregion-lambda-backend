@@ -48,9 +48,9 @@ Resources:
       EvaluationPeriods: 1
       MetricName: Invocations
       Namespace: AWS/Lambda
-      Period: 120
+      Period: 60
       Statistic: Sum
-      Threshold: 2
+      Threshold: 1
       #TreatMissingData: breaching
       Unit: Count
 

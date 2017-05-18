@@ -40,6 +40,9 @@ ping-pong-stack:
 		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
 		"DomainName=$(PRIMARY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
+		"MyTargetStackName=$(STACKNAME_BASE)-primary" \
+		"OtherTargetStackName=$(STACKNAME_BASE)-standby" \
+		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-standby" \
 		--capabilities CAPABILITY_IAM || exit 0
 	aws cloudformation deploy \
 		--template-file ping-pong-stack.yml \
@@ -50,6 +53,9 @@ ping-pong-stack:
 		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
 		"DomainName=$(STANDBY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
+		"MyTargetStackName=$(STACKNAME_BASE)-standby" \
+		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-primary" \
+		"OtherTargetStackName=$(STACKNAME_BASE)-primary" \
 		--capabilities CAPABILITY_IAM || exit 0
 	aws cloudformation deploy \
 		--template-file ping-pong-stack-sns-alarms.yml \

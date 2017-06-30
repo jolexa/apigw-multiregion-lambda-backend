@@ -5,6 +5,7 @@ STANDBY_REGION="us-west-2"
 STANDBY_BUCKET="apigw-multiregion-lambda-backend2"
 PRIMARY_URL="apigw-multiregion.jolexa.us"
 STANDBY_URL="apigw-multiregion-standby.jolexa.us"
+TRANSITIONAL_URL="apigw-multiregion-temp.jolexa.us"
 ZONE="jolexa.us."
 
 all: existing-project ping-pong-stack
@@ -31,6 +32,11 @@ ping-pong-stack:
 		aws s3 cp ./deployment.zip \
 		s3://$(STANDBY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
 		rm -f deployment.zip
+	cd aws-apigw-acm/ && \
+		make \
+			STACKNAME_BASE=$(STACKNAME_BASE)-transitional \
+			URL=$(TRANSITIONAL_URL) \
+			deploy-acm
 	aws cloudformation deploy \
 		--template-file ping-pong-stack.yml \
 		--stack-name $(STACKNAME_BASE)-ping-pong-infra-primary \

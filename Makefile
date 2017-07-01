@@ -51,6 +51,7 @@ ping-pong-stack:
 		"MyInfraStrackName=$(STACKNAME_BASE)-primary" \
 		"OtherInfraStrackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-standby" \
+		"OtherStackRegion=$(STANDBY_REGION)" \
 		--capabilities CAPABILITY_IAM || exit 0
 	aws cloudformation deploy \
 		--template-file ping-pong-stack.yml \
@@ -66,6 +67,7 @@ ping-pong-stack:
 		"MyInfraStrackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-primary" \
 		"OtherInfraStrackName=$(STACKNAME_BASE)-primary" \
+		"OtherStackRegion=$(PRIMARY_REGION)" \
 		--capabilities CAPABILITY_IAM || exit 0
 	aws cloudformation deploy \
 		--template-file ping-pong-stack-sns-alarms.yml \

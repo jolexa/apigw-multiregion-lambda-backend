@@ -21,6 +21,8 @@ Parameters:
     Type: String
   MyInfraStrackName:
     Type: String
+  OtherStackRegion:
+    Type: String
 
 Outputs:
   AlarmSNSArn:
@@ -76,6 +78,7 @@ Resources:
           PrimaryUrl: !Ref PrimaryUrl
           StandbyUrl: !Ref StandbyUrl
           TransitionalUrl: !Ref TransitonalUrl
+          OtherStackRegion: !Ref OtherStackRegion
 
   AlarmSNS:
     Type: AWS::SNS::Topic

@@ -15,11 +15,11 @@ Parameters:
     Type: String
   md5:
     Type: String
-  OtherInfraStrackName:
+  OtherInfraStackName:
     Type: String
   OtherPingPongStackName:
     Type: String
-  MyInfraStrackName:
+  MyInfraStackName:
     Type: String
   OtherStackRegion:
     Type: String

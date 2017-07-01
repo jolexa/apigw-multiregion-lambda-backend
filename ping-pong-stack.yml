@@ -11,11 +11,11 @@ Parameters:
     Type: String
   md5:
     Type: String
-  OtherTargetStackName:
+  OtherInfraStrackName:
     Type: String
   OtherPingPongStackName:
     Type: String
-  MyTargetStackName:
+  MyInfraStrackName:
     Type: String
 
 Outputs:
@@ -65,9 +65,9 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherTargetStackName: !Ref OtherTargetStackName
+          OtherInfraStrackName: !Ref OtherInfraStrackName
           OtherPingPongStackName: !Ref OtherPingPongStackName
-          MyTargetStackName: !Ref MyTargetStackName
+          MyInfraStrackName: !Ref MyInfraStrackName
           MyPingPongStackName: !Sub ${AWS::StackName}
           PrimaryUrl: !Ref PrimaryUrl
 

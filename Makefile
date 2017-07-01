@@ -47,7 +47,7 @@ ping-pong-stack:
 		"DomainName=$(PRIMARY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
 		"StandbyUrl=$(STANDBY_URL)" \
-		"TranstionalUrl=$(TRANSITIONAL_URL)" \
+		"TransitionalUrl=$(TRANSITIONAL_URL)" \
 		"MyInfraStackName=$(STACKNAME_BASE)-primary" \
 		"OtherInfraStackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-standby" \
@@ -63,7 +63,7 @@ ping-pong-stack:
 		"DomainName=$(STANDBY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
 		"StandbyUrl=$(STANDBY_URL)" \
-		"TranstionalUrl=$(TRANSITIONAL_URL)" \
+		"TransitionalUrl=$(TRANSITIONAL_URL)" \
 		"MyInfraStackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-primary" \
 		"OtherInfraStackName=$(STACKNAME_BASE)-primary" \

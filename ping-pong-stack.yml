@@ -65,7 +65,7 @@ Resources:
       FunctionName: apigw-multiregion-lambda-backend-swap
       Handler: swap.handler
       Runtime: python3.6
-      Timeout: 1
+      Timeout: 300
       CodeUri:
         Bucket: !Ref Bucket
         Key: !Ref md5
@@ -77,8 +77,17 @@ Resources:
           MyPingPongStackName: !Sub ${AWS::StackName}
           PrimaryUrl: !Ref PrimaryUrl
           StandbyUrl: !Ref StandbyUrl
-          TransitionalUrl: !Ref TransitonalUrl
+          TransitionalUrl: !Ref TransitionalUrl
           OtherStackRegion: !Ref OtherStackRegion
+      Policies:
+        # Needed for the lambda to update cloudformation
+        - Statement:
+            Effect: Allow
+            Action:
+                - 'cloudformation:DescribeStacks'
+                - 'cloudformation:GetTemplate'
+                - 'cloudformation:UpdateStack'
+            Resource: '*'
 
   AlarmSNS:
     Type: AWS::SNS::Topic

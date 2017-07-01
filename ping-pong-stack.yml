@@ -71,9 +71,9 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherInfraStrackName: !Ref OtherInfraStrackName
+          OtherInfraStackName: !Ref OtherInfraStackName
           OtherPingPongStackName: !Ref OtherPingPongStackName
-          MyInfraStrackName: !Ref MyInfraStrackName
+          MyInfraStackName: !Ref MyInfraStackName
           MyPingPongStackName: !Sub ${AWS::StackName}
           PrimaryUrl: !Ref PrimaryUrl
           StandbyUrl: !Ref StandbyUrl

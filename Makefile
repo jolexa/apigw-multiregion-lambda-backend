@@ -48,8 +48,8 @@ ping-pong-stack:
 		"PrimaryUrl=$(PRIMARY_URL)" \
 		"StandbyUrl=$(Standby_URL)" \
 		"TranstionalUrl=$(Transitional_URL)" \
-		"MyInfraStrackName=$(STACKNAME_BASE)-primary" \
-		"OtherInfraStrackName=$(STACKNAME_BASE)-standby" \
+		"MyInfraStackName=$(STACKNAME_BASE)-primary" \
+		"OtherInfraStackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-standby" \
 		"OtherStackRegion=$(STANDBY_REGION)" \
 		--capabilities CAPABILITY_IAM || exit 0
@@ -64,9 +64,9 @@ ping-pong-stack:
 		"PrimaryUrl=$(PRIMARY_URL)" \
 		"StandbyUrl=$(Standby_URL)" \
 		"TranstionalUrl=$(Transitional_URL)" \
-		"MyInfraStrackName=$(STACKNAME_BASE)-standby" \
+		"MyInfraStackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-primary" \
-		"OtherInfraStrackName=$(STACKNAME_BASE)-primary" \
+		"OtherInfraStackName=$(STACKNAME_BASE)-primary" \
 		"OtherStackRegion=$(PRIMARY_REGION)" \
 		--capabilities CAPABILITY_IAM || exit 0
 	aws cloudformation deploy \

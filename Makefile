@@ -46,8 +46,8 @@ ping-pong-stack:
 		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
 		"DomainName=$(PRIMARY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
-		"StandbyUrl=$(Standby_URL)" \
-		"TranstionalUrl=$(Transitional_URL)" \
+		"StandbyUrl=$(STANDBY_URL)" \
+		"TranstionalUrl=$(TRANSITIONAL_URL)" \
 		"MyInfraStackName=$(STACKNAME_BASE)-primary" \
 		"OtherInfraStackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-standby" \
@@ -62,8 +62,8 @@ ping-pong-stack:
 		"md5=$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1)" \
 		"DomainName=$(STANDBY_URL)" \
 		"PrimaryUrl=$(PRIMARY_URL)" \
-		"StandbyUrl=$(Standby_URL)" \
-		"TranstionalUrl=$(Transitional_URL)" \
+		"StandbyUrl=$(STANDBY_URL)" \
+		"TranstionalUrl=$(TRANSITIONAL_URL)" \
 		"MyInfraStackName=$(STACKNAME_BASE)-standby" \
 		"OtherPingPongStackName=$(STACKNAME_BASE)-ping-pong-infra-primary" \
 		"OtherInfraStackName=$(STACKNAME_BASE)-primary" \

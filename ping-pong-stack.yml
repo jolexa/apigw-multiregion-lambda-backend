@@ -7,6 +7,10 @@ Parameters:
     Type: String
   PrimaryUrl:
     Type: String
+  StandbyUrl:
+    Type: String
+  TransitionalUrl:
+    Type: String
   Bucket:
     Type: String
   md5:
@@ -70,6 +74,8 @@ Resources:
           MyInfraStrackName: !Ref MyInfraStrackName
           MyPingPongStackName: !Sub ${AWS::StackName}
           PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitonalUrl
 
   AlarmSNS:
     Type: AWS::SNS::Topic

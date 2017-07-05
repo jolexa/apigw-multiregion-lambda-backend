@@ -87,7 +87,30 @@ Resources:
                 - 'cloudformation:DescribeStacks'
                 - 'cloudformation:GetTemplate'
                 - 'cloudformation:UpdateStack'
+                - 'lambda:GetFunctionConfiguration'
+                - 'route53:ListHostedZones'
             Resource: '*'
+        - Statement:
+            Effect: Allow
+            Action:
+                - 'apigateway:POST'
+            Resource:
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl/basepathmappings'
+        - Statement:
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl/basepathmappings'
+            Effect: Allow
+            Action:
+                - 'lambda:InvokeFunction'
+            Resource:
+                # Too broad, remove wildcard somehow?
+                # Just needs permissions to invoke the Custom CFN function in
+                # the existing stack
+                - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*'
+                - !Sub 'arn:aws:lambda:${OtherStackRegion}:${AWS::AccountId}:function:*'
 
   AlarmSNS:
     Type: AWS::SNS::Topic

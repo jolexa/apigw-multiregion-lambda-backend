@@ -89,6 +89,7 @@ Resources:
                 - 'cloudformation:UpdateStack'
                 - 'lambda:GetFunctionConfiguration'
                 - 'route53:ListHostedZones'
+                - 'route53:GetChange'
             Resource: '*'
         - Statement:
             Effect: Allow
@@ -96,12 +97,23 @@ Resources:
                 - 'apigateway:POST'
             Resource:
                 - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}/basepathmappings'
                 - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl/basepathmappings'
-        - Statement:
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl}/basepathmappings'
                 - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl}/basepathmappings'
+        - Statement:
+            Effect: Allow
+            Action:
+                - 'apigateway:DELETE'
+            Resource:
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl}/basepathmappings/*'
+        - Statement:
             Effect: Allow
             Action:
                 - 'lambda:InvokeFunction'
@@ -111,6 +123,13 @@ Resources:
                 # the existing stack
                 - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*'
                 - !Sub 'arn:aws:lambda:${OtherStackRegion}:${AWS::AccountId}:function:*'
+        - Statement:
+            Effect: Allow
+            Action:
+                - 'route53:ChangeResourceRecordSets'
+            Resource:
+                # Too broad, remove wildcard somehow?
+                - 'arn:aws:route53:::hostedzone/*'
 
   AlarmSNS:
     Type: AWS::SNS::Topic

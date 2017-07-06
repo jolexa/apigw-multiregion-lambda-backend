@@ -10,6 +10,11 @@ def get_cloudformation_params(stackname, region='ca-central-1'):
 
 
 def update_stack(stackname, newurl, region='ca-central-1'):
+    print("Updating cloudformation: {0}, new: {1}, region={2}".format(
+        stackname,
+        newurl,
+        region)
+        )
     cfn = boto3.client('cloudformation', region_name=region)
     params = get_cloudformation_params(stackname, region)
     # change the Param for PrimaryUrl
@@ -32,6 +37,10 @@ def check_green_light(stackname, region='ca-central-1'):
         if status in ['UPDATE_COMPLETE', 'CREATE_COMPLETE']: # green status!
             break
         else:
+            print("Waiting...because stackname: {0} is {1}".format(
+                stackname,
+                status)
+                )
             time.sleep(5)
     return True
 

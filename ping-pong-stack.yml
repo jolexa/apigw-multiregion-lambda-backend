@@ -42,6 +42,24 @@ Mappings:
       'cron': 'cron(1/2 * * * ? *)'
 
 Resources:
+  MultiRegionCoolDownTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: "text"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "text"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
   PongerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -79,6 +97,7 @@ Resources:
           StandbyUrl: !Ref StandbyUrl
           TransitionalUrl: !Ref TransitionalUrl
           OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
       Policies:
         # Needed for the lambda to update cloudformation
         - Statement:

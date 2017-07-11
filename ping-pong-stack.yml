@@ -76,6 +76,97 @@ Resources:
             Path: /
             Method: GET
 
+#  OrchestratorStateMachine:
+#    Type: AWS::StepFunctions::StateMachine
+#    Properties:
+#      DefinitionString:
+#        !Sub
+#          - |-
+#            {
+#              "Comment": "A Hello World AWL example using an AWS Lambda Function",
+#              "StartAt": "FirstState",
+#              "States": {
+#                "FirstState": {
+#                  "Type": "Task",
+#                  "Resource": "${lambdaArn}",
+#                  "Next": "SecondState"
+#                },
+#                "SecondState": {
+#                  "Type": "Task",
+#                  "Resource": "${lambdaArn2}",
+#                  "End": true
+#                }
+#              }
+#            }
+#          - {lambdaArn: !GetAtt [PongerFunction, Arn], lambdaArn2: !GetAtt [PingerFunction, Arn] }
+#      RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/service-role/StatesExecutionRole-${AWS::Region}
+
+  SwapperFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Sid: 'Lambda'
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      Path: "/cfn/"
+      Policies:
+      - PolicyName: UpdateCFNThings
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+                - 'cloudformation:DescribeStacks'
+                - 'cloudformation:GetTemplate'
+                - 'cloudformation:UpdateStack'
+                - 'lambda:GetFunctionConfiguration'
+                - 'route53:ListHostedZones'
+                - 'route53:GetChange'
+            Resource: '*'
+          - Effect: Allow
+            Action:
+                - 'apigateway:POST'
+            Resource:
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}/basepathmappings'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl}/basepathmappings'
+          - Effect: Allow
+            Action:
+                - 'apigateway:DELETE'
+            Resource:
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}/basepathmappings/*'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl}/basepathmappings/*'
+          - Effect: Allow
+            Action:
+                - 'lambda:InvokeFunction'
+            Resource:
+                # Too broad, remove wildcard somehow?
+                # Just needs permissions to invoke the Custom CFN function in
+                # the existing stack
+                - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*'
+                - !Sub 'arn:aws:lambda:${OtherStackRegion}:${AWS::AccountId}:function:*'
+          - Effect: Allow
+            Action:
+                - 'route53:ChangeResourceRecordSets'
+            Resource:
+                # Too broad, remove wildcard somehow?
+                - 'arn:aws:route53:::hostedzone/*'
+
+
   SwapperFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -98,57 +189,8 @@ Resources:
           TransitionalUrl: !Ref TransitionalUrl
           OtherStackRegion: !Ref OtherStackRegion
           CoolDownTableName: !Ref MultiRegionCoolDownTable
-      Policies:
-        # Needed for the lambda to update cloudformation
-        - Statement:
-            Effect: Allow
-            Action:
-                - 'cloudformation:DescribeStacks'
-                - 'cloudformation:GetTemplate'
-                - 'cloudformation:UpdateStack'
-                - 'lambda:GetFunctionConfiguration'
-                - 'route53:ListHostedZones'
-                - 'route53:GetChange'
-            Resource: '*'
-        - Statement:
-            Effect: Allow
-            Action:
-                - 'apigateway:POST'
-            Resource:
-                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}/basepathmappings'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl}/basepathmappings'
-        - Statement:
-            Effect: Allow
-            Action:
-                - 'apigateway:DELETE'
-            Resource:
-                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings/*'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}/basepathmappings/*'
-                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings/*'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl}/basepathmappings/*'
-                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}/basepathmappings/*'
-                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl}/basepathmappings/*'
-        - Statement:
-            Effect: Allow
-            Action:
-                - 'lambda:InvokeFunction'
-            Resource:
-                # Too broad, remove wildcard somehow?
-                # Just needs permissions to invoke the Custom CFN function in
-                # the existing stack
-                - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*'
-                - !Sub 'arn:aws:lambda:${OtherStackRegion}:${AWS::AccountId}:function:*'
-        - Statement:
-            Effect: Allow
-            Action:
-                - 'route53:ChangeResourceRecordSets'
-            Resource:
-                # Too broad, remove wildcard somehow?
-                - 'arn:aws:route53:::hostedzone/*'
+      Role: !GetAtt SwapperFunctionRole.Arn
+
 
   AlarmSNS:
     Type: AWS::SNS::Topic

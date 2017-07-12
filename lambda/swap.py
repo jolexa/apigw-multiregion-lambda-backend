@@ -108,7 +108,7 @@ def ThirdWait(event, context):
     check_green_light(os.environ['OtherInfraStackName'],
             os.environ['OtherStackRegion'])
 
-def ForthFunction(event, context):
+def FourthFunction(event, context):
     print(event)
     # 4) update the otherstack ping pong stack to be the new standby
     update_stack(

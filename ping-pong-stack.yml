@@ -29,10 +29,10 @@ Outputs:
     Value: !Ref AlarmSNS
     Export:
       Name: apigw-multiregion-lambda-backend:AlarmSNSArn
-  SwapperFunctionArn:
-    Value: !GetAtt SwapperFunction.Arn
+  KickerFunctionArn:
+    Value: !GetAtt KickerFunction.Arn
     Export:
-      Name: apigw-multiregion-lambda-backend:SwapperFunctionArn
+      Name: apigw-multiregion-lambda-backend:KickerFunctionArn
 
 Mappings:
   RegionMap:
@@ -167,12 +167,201 @@ Resources:
                 - 'arn:aws:route53:::hostedzone/*'
 
 
-  SwapperFunction:
+  KickerFunction:
     Type: AWS::Serverless::Function
     Properties:
       # I don't like hardcoding names but it is required for cross-region references
       FunctionName: apigw-multiregion-lambda-backend-swap
-      Handler: swap.handler
+      Handler: swap.kicker
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  FirstFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.FirstFunction
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  SecondFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.SecondFunction
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  ThirdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.ThirdFunction
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  FourthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.FourthFunction
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  FifthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.FifthFunction
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  SixthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.SixthFunction
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  FirstWait:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.FirstWait
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  ThirdWait:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.ThirdWait
+      Runtime: python3.6
+      Timeout: 300
+      CodeUri:
+        Bucket: !Ref Bucket
+        Key: !Ref md5
+      Environment:
+        Variables:
+          OtherInfraStackName: !Ref OtherInfraStackName
+          OtherPingPongStackName: !Ref OtherPingPongStackName
+          MyInfraStackName: !Ref MyInfraStackName
+          MyPingPongStackName: !Sub ${AWS::StackName}
+          PrimaryUrl: !Ref PrimaryUrl
+          StandbyUrl: !Ref StandbyUrl
+          TransitionalUrl: !Ref TransitionalUrl
+          OtherStackRegion: !Ref OtherStackRegion
+          CoolDownTableName: !Ref MultiRegionCoolDownTable
+      Role: !GetAtt SwapperFunctionRole.Arn
+  FifthWait:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: swap.FifthWait
       Runtime: python3.6
       Timeout: 300
       CodeUri:

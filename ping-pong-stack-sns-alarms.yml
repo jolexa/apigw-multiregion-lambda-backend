@@ -19,6 +19,6 @@ Resources:
   LambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     Properties:
-      FunctionName: !ImportValue apigw-multiregion-lambda-backend:SwapperFunctionArn
+      FunctionName: !ImportValue apigw-multiregion-lambda-backend:KickerFunctionArn
       Action: "lambda:InvokeFunction"
       Principal: "sns.amazonaws.com"

@@ -139,7 +139,7 @@ Resources:
                 ThirdFunction: !GetAtt [ThirdFunction, Arn],
                 FourthFunction: !GetAtt [FourthFunction, Arn],
                 FifthFunction: !GetAtt [FifthFunction, Arn],
-                SixthFunction: !GetAtt [FirstFunction, Arn],
+                SixthFunction: !GetAtt [SixthFunction, Arn],
                 FirstWait: !GetAtt [FirstWait, Arn],
                 ThirdWait: !GetAtt [ThirdWait, Arn],
                 FifthWait: !GetAtt [FifthWait, Arn]

@@ -46,6 +46,7 @@ def check_green_light(stackname, region='ca-central-1'):
 
 
 def kicker(event, context):
+    print(event)
     '''
     Think about it, if the $current_primary stack ponger is not getting invoked, it
     means that lambda is degraded in the primary region. So, it makes sense to
@@ -66,6 +67,11 @@ def kicker(event, context):
     5) update the mystack infra stack to be the new primary
     6) update the mystack ping-pong stack to be the new primary
     '''
+    client = boto3.client('stepfunctions')
+    print('Invoking StateMachine: {0}'.format(os.environ['StateMachineArn']))
+    response = client.start_execution(
+            stateMachineArn=os.environ['StateMachineArn']
+            )
 
 def FirstFunction(event, context):
     print(event)

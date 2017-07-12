@@ -225,16 +225,16 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherInfraStackName: !Ref OtherInfraStackName
-          OtherPingPongStackName: !Ref OtherPingPongStackName
-          MyInfraStackName: !Ref MyInfraStackName
-          MyPingPongStackName: !Sub ${AWS::StackName}
-          PrimaryUrl: !Ref PrimaryUrl
-          StandbyUrl: !Ref StandbyUrl
-          TransitionalUrl: !Ref TransitionalUrl
-          OtherStackRegion: !Ref OtherStackRegion
+          StateMachineArn: !Ref OrchestratorStateMachine
           CoolDownTableName: !Ref MultiRegionCoolDownTable
-      Role: !GetAtt SwapperFunctionRole.Arn
+      Policies:
+        - Statement:
+            Effect: Allow
+            Action:
+              - 'states:StartExecution'
+            Resource:
+              - !Ref OrchestratorStateMachine
+
   FirstFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -246,15 +246,8 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherInfraStackName: !Ref OtherInfraStackName
-          OtherPingPongStackName: !Ref OtherPingPongStackName
           MyInfraStackName: !Ref MyInfraStackName
-          MyPingPongStackName: !Sub ${AWS::StackName}
-          PrimaryUrl: !Ref PrimaryUrl
-          StandbyUrl: !Ref StandbyUrl
           TransitionalUrl: !Ref TransitionalUrl
-          OtherStackRegion: !Ref OtherStackRegion
-          CoolDownTableName: !Ref MultiRegionCoolDownTable
       Role: !GetAtt SwapperFunctionRole.Arn
   SecondFunction:
     Type: AWS::Serverless::Function
@@ -267,15 +260,8 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherInfraStackName: !Ref OtherInfraStackName
-          OtherPingPongStackName: !Ref OtherPingPongStackName
-          MyInfraStackName: !Ref MyInfraStackName
           MyPingPongStackName: !Sub ${AWS::StackName}
-          PrimaryUrl: !Ref PrimaryUrl
-          StandbyUrl: !Ref StandbyUrl
           TransitionalUrl: !Ref TransitionalUrl
-          OtherStackRegion: !Ref OtherStackRegion
-          CoolDownTableName: !Ref MultiRegionCoolDownTable
       Role: !GetAtt SwapperFunctionRole.Arn
   ThirdFunction:
     Type: AWS::Serverless::Function
@@ -289,14 +275,8 @@ Resources:
       Environment:
         Variables:
           OtherInfraStackName: !Ref OtherInfraStackName
-          OtherPingPongStackName: !Ref OtherPingPongStackName
-          MyInfraStackName: !Ref MyInfraStackName
-          MyPingPongStackName: !Sub ${AWS::StackName}
-          PrimaryUrl: !Ref PrimaryUrl
           StandbyUrl: !Ref StandbyUrl
-          TransitionalUrl: !Ref TransitionalUrl
           OtherStackRegion: !Ref OtherStackRegion
-          CoolDownTableName: !Ref MultiRegionCoolDownTable
       Role: !GetAtt SwapperFunctionRole.Arn
   FourthFunction:
     Type: AWS::Serverless::Function
@@ -309,15 +289,9 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherInfraStackName: !Ref OtherInfraStackName
           OtherPingPongStackName: !Ref OtherPingPongStackName
-          MyInfraStackName: !Ref MyInfraStackName
-          MyPingPongStackName: !Sub ${AWS::StackName}
-          PrimaryUrl: !Ref PrimaryUrl
           StandbyUrl: !Ref StandbyUrl
-          TransitionalUrl: !Ref TransitionalUrl
           OtherStackRegion: !Ref OtherStackRegion
-          CoolDownTableName: !Ref MultiRegionCoolDownTable
       Role: !GetAtt SwapperFunctionRole.Arn
   FifthFunction:
     Type: AWS::Serverless::Function
@@ -330,15 +304,8 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherInfraStackName: !Ref OtherInfraStackName
-          OtherPingPongStackName: !Ref OtherPingPongStackName
           MyInfraStackName: !Ref MyInfraStackName
-          MyPingPongStackName: !Sub ${AWS::StackName}
           PrimaryUrl: !Ref PrimaryUrl
-          StandbyUrl: !Ref StandbyUrl
-          TransitionalUrl: !Ref TransitionalUrl
-          OtherStackRegion: !Ref OtherStackRegion
-          CoolDownTableName: !Ref MultiRegionCoolDownTable
       Role: !GetAtt SwapperFunctionRole.Arn
   SixthFunction:
     Type: AWS::Serverless::Function
@@ -351,15 +318,8 @@ Resources:
         Key: !Ref md5
       Environment:
         Variables:
-          OtherInfraStackName: !Ref OtherInfraStackName
-          OtherPingPongStackName: !Ref OtherPingPongStackName
-          MyInfraStackName: !Ref MyInfraStackName
           MyPingPongStackName: !Sub ${AWS::StackName}
           PrimaryUrl: !Ref PrimaryUrl
-          StandbyUrl: !Ref StandbyUrl
-          TransitionalUrl: !Ref TransitionalUrl
-          OtherStackRegion: !Ref OtherStackRegion
-          CoolDownTableName: !Ref MultiRegionCoolDownTable
       Role: !GetAtt SwapperFunctionRole.Arn
   FirstWait:
     Type: AWS::Serverless::Function

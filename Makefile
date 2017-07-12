@@ -28,9 +28,9 @@ existing-project:
 ping-pong-stack:
 	cd lambda && \
 		zip -r9 /tmp/deployment.zip *.py && \
-		aws s3 cp ./deployment.zip \
+		aws s3 cp --region $(PRIMARY_REGION) /tmp/deployment.zip \
 			s3://$(PRIMARY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
-		aws s3 cp /tmp/deployment.zip \
+		aws s3 cp --region $(STANDBY_REGION) /tmp/deployment.zip \
 			s3://$(STANDBY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
 		rm -f /tmp/deployment.zip
 	cd aws-apigw-acm/ && \

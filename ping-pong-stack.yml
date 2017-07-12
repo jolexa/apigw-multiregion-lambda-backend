@@ -76,30 +76,75 @@ Resources:
             Path: /
             Method: GET
 
-#  OrchestratorStateMachine:
-#    Type: AWS::StepFunctions::StateMachine
-#    Properties:
-#      DefinitionString:
-#        !Sub
-#          - |-
-#            {
-#              "Comment": "A Hello World AWL example using an AWS Lambda Function",
-#              "StartAt": "FirstState",
-#              "States": {
-#                "FirstState": {
-#                  "Type": "Task",
-#                  "Resource": "${lambdaArn}",
-#                  "Next": "SecondState"
-#                },
-#                "SecondState": {
-#                  "Type": "Task",
-#                  "Resource": "${lambdaArn2}",
-#                  "End": true
-#                }
-#              }
-#            }
-#          - {lambdaArn: !GetAtt [PongerFunction, Arn], lambdaArn2: !GetAtt [PingerFunction, Arn] }
-#      RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/service-role/StatesExecutionRole-${AWS::Region}
+  OrchestratorStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      DefinitionString:
+        !Sub
+          - |-
+            {
+              "Comment": "Orchestrator State Machine, trivial",
+              "StartAt": "FirstFunction",
+              "States": {
+                "FifthFunction": {
+                  "Next": "FifthWait",
+                  "Resource": "${FifthFunction}",
+                  "Type": "Task"
+                },
+                "FifthWait": {
+                  "Next": "SixthFunction",
+                  "Resource": "${FifthWait}",
+                  "Type": "Task"
+                },
+                "FirstFunction": {
+                  "Next": "FirstWait",
+                  "Resource": "${FirstFunction}",
+                  "Type": "Task"
+                },
+                "FirstWait": {
+                  "Next": "SecondFunction",
+                  "Resource": "${FirstWait}",
+                  "Type": "Task"
+                },
+                "FourthFunction": {
+                  "Next": "FifthFunction",
+                  "Resource": "${FourthFunction}",
+                  "Type": "Task"
+                },
+                "SecondFunction": {
+                  "Next": "ThirdFunction",
+                  "Resource": "${SecondFunction}",
+                  "Type": "Task"
+                },
+                "SixthFunction": {
+                  "End": true,
+                  "Resource": "${SixthFunction}",
+                  "Type": "Task"
+                },
+                "ThirdFunction": {
+                  "Next": "ThirdWait",
+                  "Resource": "${ThirdFunction}",
+                  "Type": "Task"
+                },
+                "ThirdWait": {
+                  "Next": "FourthFunction",
+                  "Resource": "${ThirdWait}",
+                  "Type": "Task"
+                }
+              }
+            }
+          - {
+                FirstFunction: !GetAtt [FirstFunction, Arn],
+                SecondFunction: !GetAtt [SecondFunction, Arn],
+                ThirdFunction: !GetAtt [ThirdFunction, Arn],
+                FourthFunction: !GetAtt [FourthFunction, Arn],
+                FifthFunction: !GetAtt [FifthFunction, Arn],
+                SixthFunction: !GetAtt [FirstFunction, Arn],
+                FirstWait: !GetAtt [FirstWait, Arn],
+                ThirdWait: !GetAtt [ThirdWait, Arn],
+                FifthWait: !GetAtt [FifthWait, Arn]
+            }
+      RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/service-role/StatesExecutionRole-${AWS::Region}
 
   SwapperFunctionRole:
     Type: AWS::IAM::Role

@@ -26,12 +26,13 @@ existing-project:
 			BUCKET=$(STANDBY_BUCKET)
 
 ping-pong-stack:
-	cd lambda && zip -r9 deployment.zip *.py && \
+	cd lambda && \
+		zip -r9 /tmp/deployment.zip *.py && \
 		aws s3 cp ./deployment.zip \
-		s3://$(PRIMARY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
-		aws s3 cp ./deployment.zip \
-		s3://$(STANDBY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
-		rm -f deployment.zip
+			s3://$(PRIMARY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
+		aws s3 cp /tmp/deployment.zip \
+			s3://$(STANDBY_BUCKET)/$(shell md5sum lambda/*.py| md5sum | cut -d ' ' -f 1) && \
+		rm -f /tmp/deployment.zip
 	cd aws-apigw-acm/ && \
 		make \
 			STACKNAME_BASE=$(STACKNAME_BASE)-transitional \

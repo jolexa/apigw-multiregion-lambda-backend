@@ -1,3 +1,5 @@
+.PHONY: website-infra
+
 STACKNAME_BASE="apigw-multiregion-lambda-backend"
 PRIMARY_REGION="us-east-2"
 PRIMARY_BUCKET="apigw-multiregion-lambda-backend"

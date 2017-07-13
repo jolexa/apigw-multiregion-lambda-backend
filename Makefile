@@ -84,3 +84,17 @@ ping-pong-stack:
 		--parameter-overrides \
 		"OtherRegion=$(PRIMARY_REGION)" \
 		--capabilities CAPABILITY_IAM || exit 0
+
+
+website-infra:
+	cd website-infra && \
+		make STACKNAME_BASE=$(STACKNAME_BASE)-website \
+		PRIMARY_REGION=$(PRIMARY_REGION) \
+		STANDBY_REGION=$(STANDBY_REGION) \
+		PRIMARY_URL=apigw-multiregion-lambda-backend.jolexa.us \
+		STANDBY_URL=apigw-multiregion-lambda-backend-standby.jolexa.us
+
+push-html-primary-bucket:
+	aws s3 sync --sse --acl public-read html/ \
+		s3://$(shell website-infra/scripts/find-cfn-output-value.py --region $(PRIMARY_REGION) --output-key PrimaryS3BucketName --stack-name $(STACKNAME_BASE)-website-primary-infra) /
+	website-infra/scripts/invalidate-all.py apigw-multiregion-lambda-backend.jolexa.us

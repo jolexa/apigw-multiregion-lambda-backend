@@ -1,3 +1,6 @@
 [submodule "aws-apigw-acm"]
 	path = aws-apigw-acm
 	url = git@github.com:jolexa/aws-apigw-acm.git
+[submodule "website-infra"]
+	path = website-infra
+	url = git@github.com:jolexa/s3-staticsite-multiregion.git

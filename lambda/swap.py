@@ -32,17 +32,17 @@ def update_stack(stackname, newurl, region='ca-central-1'):
 
 def check_green_light(stackname, region='ca-central-1'):
     cfn = boto3.client('cloudformation', region_name=region)
-    while True:
-        status = cfn.describe_stacks(StackName=stackname)['Stacks'][0]['StackStatus']
-        if status in ['UPDATE_COMPLETE', 'CREATE_COMPLETE']: # green status!
-            break
-        else:
-            print("Waiting...because stackname: {0} is {1}".format(
+    status = cfn.describe_stacks(StackName=stackname)['Stacks'][0]['StackStatus']
+    if status in ['UPDATE_COMPLETE', 'CREATE_COMPLETE']: # green status!
+        return True
+    else:
+        print("Stackname: {0} is {1}".format(
                 stackname,
                 status)
                 )
-            time.sleep(5)
-    return True
+        # This is kinda weird. Here we WANT to exit ungracefully so the
+        # state machine will "retry"
+        raise BaseException
 
 
 def kicker(event, context):

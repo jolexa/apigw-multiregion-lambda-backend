@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AWS MultiRegion API GW and Lambda Backend</title>
+  </head>
+  <body>
+
+    <bootmark
+    src=https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/README.md>
+    </bootmark>
+
+<a href="https://github.com/jolexa/apigw-multiregion-lambda-backend"><img style="position: fixed; top: 0; right: 0; border: 0; z-index: 1000; margin: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+    <script src="https://unpkg.com/bootmark@latest/dist/bootmark.bundle.min.js"></script>
+    <script>
+    showdown.extension('img-responsive', function() {
+      return [{
+        type: 'output',
+        filter: function(html){
+          var $html = $('<div></div>').html(html);
+          $('img', $html).addClass('img-responsive');
+          return $html.html();
+        }
+      }];
+    });
+    $.fn.bootmark.options = {
+        html: {
+          theme: 'flatly',
+          toc: true
+        },
+        showdown: {
+          disableForced4SpacesIndentedSublists: true,
+          extensions: ['img-responsive']
+        }
+    };
+    </script>
+  </body>
+</html>

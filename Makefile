@@ -98,5 +98,5 @@ website-infra:
 
 push-html-primary-bucket:
 	aws s3 sync --sse --acl public-read html/ \
-		s3://$(shell website-infra/scripts/find-cfn-output-value.py --region $(PRIMARY_REGION) --output-key PrimaryS3BucketName --stack-name $(STACKNAME_BASE)-website-primary-infra) /
-	website-infra/scripts/invalidate-all.py apigw-multiregion-lambda-backend.jolexa.us
+		s3://$(shell website-infra/scripts/find-cfn-output-value.py --region $(PRIMARY_REGION) --output-key PrimaryS3BucketName --stack-name $(STACKNAME_BASE)-website-primary-infra) && \
+		website-infra/scripts/invalidate-all.py apigw-multiregion-lambda-backend.jolexa.us

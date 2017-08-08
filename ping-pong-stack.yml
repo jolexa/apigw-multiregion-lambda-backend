@@ -47,17 +47,17 @@ Resources:
     Properties:
       AttributeDefinitions:
         -
-          AttributeName: "text"
-          AttributeType: "S"
+          AttributeName: "created"
+          AttributeType: "N"
       KeySchema:
         -
-          AttributeName: "text"
+          AttributeName: "created"
           KeyType: "HASH"
       ProvisionedThroughput:
         ReadCapacityUnits: "1"
         WriteCapacityUnits: "1"
       TimeToLiveSpecification:
-        AttributeName: ttl
+        AttributeName: expiretime
         Enabled: true
 
   PongerFunction:
@@ -201,8 +201,21 @@ Resources:
             Resource: '*'
           - Effect: Allow
             Action:
+                - 'apigateway:GET'
+                - 'apigateway:DELETE'
+            Resource:
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${StandbyUrl}'
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${TransitionalUrl}'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${TransitionalUrl}'
+          - Effect: Allow
+            Action:
                 - 'apigateway:POST'
             Resource:
+                - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames'
+                - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames'
                 - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${PrimaryUrl}/basepathmappings'
                 - !Sub 'arn:aws:apigateway:${OtherStackRegion}::/domainnames/${PrimaryUrl}/basepathmappings'
                 - !Sub 'arn:aws:apigateway:${AWS::Region}::/domainnames/${StandbyUrl}/basepathmappings'
@@ -234,6 +247,13 @@ Resources:
             Resource:
                 # Too broad, remove wildcard somehow?
                 - 'arn:aws:route53:::hostedzone/*'
+          - Effect: Allow
+            Action:
+                - 'cloudfront:UpdateDistribution'
+            Resource:
+                # This is crazy broad but needed to update a
+                # AWS::ApiGateway::CustomDomain resource?!?
+                - '*'
 
 
   KickerFunction:
@@ -258,6 +278,13 @@ Resources:
               - 'states:StartExecution'
             Resource:
               - !Ref OrchestratorStateMachine
+        - Statement:
+            Effect: Allow
+            Action:
+                - 'dynamodb:Scan'
+                - 'dynamodb:PutItem'
+            Resource:
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${MultiRegionCoolDownTable}"
 
   FirstFunction:
     Type: AWS::Serverless::Function

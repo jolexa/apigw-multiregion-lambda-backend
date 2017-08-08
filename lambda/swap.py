@@ -55,9 +55,9 @@ def kicker(event, context):
 
     MyStack = the region I am in (aka, the current standby)
     OtherStack = the other region (aka, the current primary)
-    at the end of this
-    OtherStack will be the primary
-    Mystack will be the standby
+    But, at the end of this:
+    OtherStack will be the standby
+    Mystack will be the primary
 
     MyStack (current standby) is currently in the way!
     1) update the mystack infra stack to be the transitional url
@@ -67,6 +67,32 @@ def kicker(event, context):
     5) update the mystack infra stack to be the new primary
     6) update the mystack ping-pong stack to be the new primary
     '''
+
+    # Check cooldown status
+    # the ttl feature may have latency per the docs so we cannot trust it
+    ddb = boto3.client('dynamodb')
+    expr = {':date' : {'N': None }}
+    expr[':date']['N'] = str(round(time.time()))
+    response = ddb.scan(
+            TableName=os.environ['CoolDownTableName'],
+            FilterExpression="expiretime > :date",
+            ExpressionAttributeValues=expr
+            )
+    if response['Count'] > 0:
+        # Oh No, we are still in cooldown.
+        print("Still in cooldown, exiting")
+        return "Still in cooldown, exiting"
+
+    # Build the dict to put into ddb
+    putitem = {'created': {'N': None}, 'expiretime': { 'N': None } }
+    putitem['created']['N'] = str(round(time.time()))
+    putitem['expiretime']['N'] = str(round(time.time()) + 900)
+    # put the item
+    ddb.put_item(
+        TableName=os.environ['CoolDownTableName'],
+        Item=putitem
+    )
+
     client = boto3.client('stepfunctions')
     print('Invoking StateMachine: {0}'.format(os.environ['StateMachineArn']))
     response = client.start_execution(

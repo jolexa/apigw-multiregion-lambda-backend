@@ -271,6 +271,7 @@ Resources:
         Variables:
           StateMachineArn: !Ref OrchestratorStateMachine
           CoolDownTableName: !Ref MultiRegionCoolDownTable
+          PingerAlarmName: !Ref PingerFunctionAlarm
       Policies:
         - Statement:
             Effect: Allow
@@ -285,6 +286,12 @@ Resources:
                 - 'dynamodb:PutItem'
             Resource:
                 - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${MultiRegionCoolDownTable}"
+        - Statement:
+            Effect: Allow
+            Action:
+                - 'cloudwatch:DescribeAlarms'
+            Resource:
+                - '*'
 
   FirstFunction:
     Type: AWS::Serverless::Function
@@ -450,6 +457,24 @@ Resources:
       Dimensions:
         - Name: FunctionName
           Value: !Ref PongerFunction
+      EvaluationPeriods: 1
+      MetricName: Invocations
+      Namespace: AWS/Lambda
+      Period: 60
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: breaching
+      Unit: Count
+
+  PingerFunctionAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      ActionsEnabled: false
+      AlarmDescription: Checks for number of ping invokes
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref PingerFunction
       EvaluationPeriods: 1
       MetricName: Invocations
       Namespace: AWS/Lambda

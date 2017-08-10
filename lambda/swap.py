@@ -48,10 +48,11 @@ def check_green_light(stackname, region='ca-central-1'):
 def kicker(event, context):
     print(event)
     '''
-    Think about it, if the $current_primary stack ponger is not getting invoked, it
-    means that lambda is degraded in the primary region. So, it makes sense to
-    then invoke a [hopefully] working region... cross region invocation makes
-    the context of this lambda function difficult to understand...
+    Think about it, if the $current_primary stack ponger is not getting invoked,
+    it means that lambda is degraded somewhere. Either in the primary region or
+    the standby region. So, it makes sense to then pivot to a [hopefully]
+    working region... cross region invocation makes the context of this lambda
+    function difficult to understand...
 
     MyStack = the region I am in (aka, the current standby)
     OtherStack = the other region (aka, the current primary)
@@ -83,6 +84,21 @@ def kicker(event, context):
         print("Still in cooldown, exiting")
         return "Still in cooldown, exiting"
 
+    # Check to see if THIS region is actually the problem..
+    cw = boto3.client('cloudwatch')
+    response = cw.describe_alarms(
+        AlarmNames=[
+            os.environ['PingerAlarmName']
+        ],
+        StateValue='ALARM'
+    )
+    if response['MetricAlarms']: # is not nil, there IS an alarm
+        # Not even sure if this will get invoked if there is a problem in this
+        # region, but the behavior is very unknown so it is worth checking.
+        print("I think the problem is with this region...undefined")
+        return "I think the problem is with this region...undefined, exiting"
+
+    # Write a cooldown timestamp entry into ddb
     # Build the dict to put into ddb
     putitem = {'created': {'N': None}, 'expiretime': { 'N': None } }
     putitem['created']['N'] = str(round(time.time()))

@@ -65,7 +65,7 @@ Resources:
     Properties:
       Handler: ponger.handler
       Runtime: python3.6
-      Timeout: 1
+      Timeout: 2
       CodeUri:
         Bucket: !Ref Bucket
         Key: !Ref md5
@@ -472,7 +472,7 @@ Resources:
     Properties:
       Handler: pinger.handler
       Runtime: python3.6
-      Timeout: 1
+      Timeout: 2
       CodeUri:
         Bucket: !Ref Bucket
         Key: !Ref md5

@@ -102,7 +102,7 @@ def kicker(event, context):
     # Build the dict to put into ddb
     putitem = {'created': {'N': None}, 'expiretime': { 'N': None } }
     putitem['created']['N'] = str(round(time.time()))
-    putitem['expiretime']['N'] = str(round(time.time()) + 900)
+    putitem['expiretime']['N'] = str(round(time.time()) + 1200)
     # put the item
     ddb.put_item(
         TableName=os.environ['CoolDownTableName'],

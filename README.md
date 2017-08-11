@@ -61,7 +61,7 @@ The relevant stacks are as follows:
    Stack](https://github.com/jolexa/apigw-multiregion-lambda-backend/blob/master/ping-pong-stack.yml)  
 This stack is the entire infrastructure sans the cross region alarm bits below.
 
-The Step Function looks like this:
+The Step Function looks like this:  
 ![Step
 Function](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/stepfunction.png)
 
@@ -123,6 +123,9 @@ think this can be optimized further by leveraging some parallel jobs.
 
 ![Recovery
 Graph](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/failover-recovery-graph.png)
+
+It is important to note that the jagged recovery is due to two factors, one
+being CloudFront propagation and the other DNS propagation throughout the world.
 
 ## Cost
 * The existing project [stack] is now in multiple regions and the standby region

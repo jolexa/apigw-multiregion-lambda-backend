@@ -46,8 +46,7 @@ except retry. The reason for this is because the first implementation was a
 _mono-lambda_ function and it was approaching the max timeout of 5 minutes. In
 addition, it was spending a large amount of time in idle, sleeping state.
 
-![Architecture
-Diagram](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/diagram.png)
+![Architecture Diagram](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/diagram.png)
 
 ## How?
 The
@@ -62,8 +61,7 @@ The relevant stacks are as follows:
 This stack is the entire infrastructure sans the cross region alarm bits below.
 
 The Step Function looks like this:  
-![Step
-Function](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/stepfunction.png)
+![Step Function](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/stepfunction.png)
 
 2. [Ping Pong SNS Alarms
    Stack](https://github.com/jolexa/apigw-multiregion-lambda-backend/blob/master/ping-pong-stack-sns-alarms.yml)
@@ -121,8 +119,7 @@ fully active at 12:15 with 2 minutes of 100% downtime. If this was a real lambda
 failure in the active region, the service would be down for about 30 minutes. I
 think this can be optimized further by leveraging some parallel jobs.
 
-![Recovery
-Graph](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/failover-recovery-graph.png)
+![Recovery Graph](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/failover-recovery-graph.png)
 
 It is important to note that the jagged recovery is due to two factors, one
 being CloudFront propagation and the other DNS propagation throughout the world.

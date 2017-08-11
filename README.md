@@ -1,6 +1,6 @@
 https://apigw-multiregion-lambda-backend.jolexa.us/
 ===============
-# apigw-mutilregion-lambda-backend
+# apigw-multiregion-lambda-backend
 
 ## Motivation
 The motivation here is to provide a reference implementation of an API Gateway
@@ -26,11 +26,11 @@ will or will not be working if lambda is not working. Typically, many services
 are degraded if Lambda is degraded.
 
 The [Kicker
-Function](https://github.com/jolexa/apigw-mutilregion-lambda-backend/blob/master/lambda/swap.py#L48-L116)
+Function](https://github.com/jolexa/apigw-multiregion-lambda-backend/blob/master/lambda/swap.py#L48-L116)
 is responsible for "kicking" off the Step Function (state machine). This will be
 in a different region than where the alarm is originating (by design). The state
 machine then invokes a series of [lambda
-functions](https://github.com/jolexa/apigw-mutilregion-lambda-backend/blob/master/lambda/swap.py#L118-L191)
+functions](https://github.com/jolexa/apigw-multiregion-lambda-backend/blob/master/lambda/swap.py#L118-L191)
 that will first move the "current active" API Gateway to a temp endpoint, then
 move the "current standby" to be the new active endpoint, finally move the now
 temp endpoint to the new standby. Therefore, it is ready for a switch in the
@@ -39,21 +39,21 @@ opposite direction.
 The step function is pretty simple, it doesn't utilize many of the features
 except retry. The reason for this is because the first implementation was a
 _mono-lambda_ function and it was approaching the max timeout of 5 minutes. In
-addition, it was spending a large amount of time in idle, sleeping state.
-
-![Architecture Diagram](https://raw.githubusercontent.com/jolexa/apigw-mutilregion-lambda-backend/master/diagram.png)
+addition, it was spending a large amount of time in idle, sleeping state. The
+architecture looks like this:
+![Architecture Diagram](https://raw.githubusercontent.com/jolexa/apigw-multiregion-lambda-backend/master/diagram.png)
 
 ## How?
 The
-[Makefile](https://github.com/jolexa/apigw-mutilregion-lambda-backend/blob/master/Makefile)
+[Makefile](https://github.com/jolexa/apigw-multiregion-lambda-backend/blob/master/Makefile)
 will deploy multiple CloudFormation stacks. Since this is a reference
 implementation, I included one of my [existing
 projects](https://github.com/jolexa/aws-apigw-acm) to show how it would work.
 The relevant stacks are as follows:
 
-1. [Ping Pong Stack](https://github.com/jolexa/apigw-mutilregion-lambda-backend/blob/master/ping-pong-stack.yml)  
+1. [Ping Pong Stack](https://github.com/jolexa/apigw-multiregion-lambda-backend/blob/master/ping-pong-stack.yml)  
 This stack is the entire infrastructure sans the cross region bits below
-2. [Ping Pong SNS Alarms Stack](https://github.com/jolexa/apigw-mutilregion-lambda-backend/blob/master/ping-pong-stack-sns-alarms.yml)
+2. [Ping Pong SNS Alarms Stack](https://github.com/jolexa/apigw-multiregion-lambda-backend/blob/master/ping-pong-stack-sns-alarms.yml)
 
 There are additional helpers in the Makefile to provision this
 [website](https://apigw-multiregion-lambda-backend.jolexa.us/)

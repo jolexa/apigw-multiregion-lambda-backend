@@ -130,7 +130,7 @@ being CloudFront propagation and the other DNS propagation throughout the world.
 * The "ping pong stack" does add some cost:
   * Two lambda functions pinging the active endpoint once per minute. Avg: 500ms
     runtime = 5 * $.000000208 = $0.00000104 * 43800 minutes in a month =
-    $0.045552/month for both functions. Plus 87600 requests, $0.01752/month in
+    $0.045552/month for both functions. Plus 43800 requests, $0.00876/month in
     requests costs
   * The ponger function has the same math (once per minute) but average billed
     for 100ms duration
@@ -144,6 +144,10 @@ being CloudFront propagation and the other DNS propagation throughout the world.
 * There several other lambda functions that get ran for little time. Let's
   assume $0.005/failover (most time is spent waiting in cloudformation/step
   function, not lambda runtime)
+  
+So, in summary, something like an extra $0.26/month to have a failover on your API
+Gateway/Lambda based service. Assuming an error in my math, at most $1/month but
+you may also be in the perpetual free tier so the math is fuzzy.
 
 ## Questions / Contact
 I will be more than happy to answer any questions on GitHub Issues and review

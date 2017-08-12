@@ -81,7 +81,7 @@ something missing from AWS, they will release it shortly thereafter*
 
 ## Things I learned
 
-To be honest, I learned the most about Step Functions. The reset was just
+To be honest, I learned the most about Step Functions. The rest was just
 figuring out the proper `boto3` code.
 * Step Functions are tricky to get proper syntax (json in yaml, tricky
   [spec](https://states-language.net/spec.html) to understand, etc)
